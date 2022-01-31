@@ -30,6 +30,10 @@ namespace BulkyBookWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category obj)
         {
+            if (obj.Name == obj.DisplayOrder.ToString())
+            {
+                ModelState.AddModelError("name", "This is a custom error");
+            }
             if (ModelState.IsValid)
             {
                 _db.Categories.Add(obj);
@@ -38,5 +42,45 @@ namespace BulkyBookWeb.Controllers
             }
             return View(obj);
         }
+
+
+
+        //GET ACTION METHOD
+        public IActionResult Edit(int? id)
+        {
+            if(id == null || id == 0)
+            {
+                return NotFound();
+            }
+            var categoryFromDb = _db.Categories.Find(id);
+            //var categoryFromSingle=_db.Categories.SingleOrDefault(u=>u.Id == id);
+            //var categoryFromFirst=_db.Categories.FirstOrDefault(u=>u.Id==id);
+
+            if(categoryFromDb == null)
+            {
+                return NotFound();
+            }
+            return View(categoryFromDb);
+        }
+
+        //POST ACTION METHOD
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Category obj)
+        {
+            if (obj.Name == obj.DisplayOrder.ToString())
+            {
+                ModelState.AddModelError("name", "This is a custom error");
+            }
+            if (ModelState.IsValid)
+            {
+                _db.Categories.Update(obj);
+                _db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(obj);
+        }
+
+
     }
 }
